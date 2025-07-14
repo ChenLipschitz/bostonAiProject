@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Log, CountryStats, StatusStats, ProgressStats } from '../types';
+import { Log, CountryStats, StatusStats, ProgressStats, ChatResponse } from '../types';
 import { Dayjs } from 'dayjs';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:12000/api';
@@ -73,5 +73,15 @@ export const fetchProgressStats = async (dateRange?: { startDate: Dayjs | null; 
   }
   
   const response = await api.get<ProgressStats>('/stats/progress', { params });
+  return response.data;
+};
+
+export const sendChatMessage = async (message: string): Promise<ChatResponse> => {
+  const response = await api.post<ChatResponse>('/chat', { message });
+  return response.data;
+};
+
+export const clarifyQuestion = async (message: string): Promise<ChatResponse> => {
+  const response = await api.post<ChatResponse>('/chat/clarify', { message });
   return response.data;
 };

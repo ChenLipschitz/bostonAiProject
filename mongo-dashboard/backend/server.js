@@ -2,6 +2,31 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+// Import chat routes
+let chatRoutes;
+try {
+  chatRoutes = require('./dist/routes/chatRoutes').default;
+  console.log('Chat routes loaded successfully');
+} catch (err) {
+  console.warn('Chat routes not available:', err.message);
+  chatRoutes = express.Router();
+  
+  // Create fallback routes for chat functionality
+  chatRoutes.post('/chat', (req, res) => {
+    res.status(503).json({ 
+      error: 'Chat service unavailable', 
+      message: 'The chat service is currently unavailable. Please try again later.' 
+    });
+  });
+  
+  chatRoutes.post('/chat/clarify', (req, res) => {
+    res.status(503).json({ 
+      error: 'Chat service unavailable', 
+      message: 'The chat service is currently unavailable. Please try again later.' 
+    });
+  });
+}
+
 const app = express();
 const port = process.env.PORT || 12000;
 
@@ -164,6 +189,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Use chat routes
+app.use('/api', chatRoutes);
+
 // Helper function to filter logs by date range
 const filterLogsByDateRange = (logs, startDate, endDate) => {
   if (!startDate && !endDate) {
@@ -269,6 +297,8 @@ app.get('/', (req, res) => {
       <li><a href="/api/stats/country">/api/stats/country</a> - Get country statistics</li>
       <li><a href="/api/stats/status">/api/stats/status</a> - Get status statistics</li>
       <li><a href="/api/stats/progress">/api/stats/progress</a> - Get progress statistics</li>
+      <li><code>POST /api/chat</code> - AI Chat Assistant</li>
+      <li><code>POST /api/chat/clarify</code> - Handle ambiguous questions</li>
     </ul>
   `);
 });

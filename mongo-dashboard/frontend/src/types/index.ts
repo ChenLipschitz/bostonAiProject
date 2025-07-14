@@ -39,3 +39,8 @@ export interface ProgressStats {
   totalJobsDontHaveMetadataV2: number;
   totalJobsSentToIndex: number;
 }
+
+export interface ChatResponse {
+  response: string;
+  error?: string;
+}
