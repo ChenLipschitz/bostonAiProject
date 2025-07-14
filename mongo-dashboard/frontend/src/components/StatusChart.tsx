@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Box, CircularProgress } from '@mui/material';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { fetchStatusStats } from '../services/api';
+import { fetchStatusStats, fetchLogs } from '../services/api';
 import { StatusStats } from '../types';
 import { Dayjs } from 'dayjs';
 
@@ -13,9 +13,11 @@ interface StatusChartProps {
     startDate: Dayjs | null;
     endDate: Dayjs | null;
   };
+  selectedCountries: string[];
+  selectedSources: string[];
 }
 
-const StatusChart: React.FC<StatusChartProps> = ({ dateRange }) => {
+const StatusChart: React.FC<StatusChartProps> = ({ dateRange, selectedCountries, selectedSources }) => {
   const [statusStats, setStatusStats] = useState<StatusStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,8 +26,32 @@ const StatusChart: React.FC<StatusChartProps> = ({ dateRange }) => {
     const getStatusStats = async () => {
       try {
         setLoading(true);
-        const data = await fetchStatusStats(dateRange);
-        setStatusStats(data);
+        
+        // Fetch logs instead of pre-aggregated stats to apply client-side filtering
+        const logs = await fetchLogs(dateRange);
+        
+        // Filter logs by selected countries and sources if any are selected
+        let filteredLogs = [...logs];
+        
+        if (selectedCountries.length > 0) {
+          filteredLogs = filteredLogs.filter(log => selectedCountries.includes(log.country_code));
+        }
+        
+        if (selectedSources.length > 0) {
+          filteredLogs = filteredLogs.filter(log => selectedSources.includes(log.transactionSourceName));
+        }
+        
+        // Calculate status stats from filtered logs
+        const statusStatsData: StatusStats = {};
+        
+        filteredLogs.forEach(log => {
+          if (!statusStatsData[log.status]) {
+            statusStatsData[log.status] = 0;
+          }
+          statusStatsData[log.status]++;
+        });
+        
+        setStatusStats(statusStatsData);
         setError(null);
       } catch (err) {
         setError('Failed to fetch status statistics');
@@ -36,7 +62,7 @@ const StatusChart: React.FC<StatusChartProps> = ({ dateRange }) => {
     };
 
     getStatusStats();
-  }, [dateRange]);
+  }, [dateRange, selectedCountries, selectedSources]);
 
   if (loading) {
     return (

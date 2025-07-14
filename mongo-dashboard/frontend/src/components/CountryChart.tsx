@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Box, CircularProgress } from '@mui/material';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { fetchCountryStats } from '../services/api';
+import { fetchCountryStats, fetchLogs } from '../services/api';
 import { CountryStats } from '../types';
 import { Dayjs } from 'dayjs';
 
@@ -13,9 +13,11 @@ interface CountryChartProps {
     startDate: Dayjs | null;
     endDate: Dayjs | null;
   };
+  selectedCountries: string[];
+  selectedSources: string[];
 }
 
-const CountryChart: React.FC<CountryChartProps> = ({ dateRange }) => {
+const CountryChart: React.FC<CountryChartProps> = ({ dateRange, selectedCountries, selectedSources }) => {
   const [countryStats, setCountryStats] = useState<CountryStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,8 +26,33 @@ const CountryChart: React.FC<CountryChartProps> = ({ dateRange }) => {
     const getCountryStats = async () => {
       try {
         setLoading(true);
-        const data = await fetchCountryStats(dateRange);
-        setCountryStats(data);
+        
+        // Fetch logs instead of pre-aggregated stats to apply client-side filtering
+        const logs = await fetchLogs(dateRange);
+        
+        // Filter logs by selected sources if any are selected
+        let filteredLogs = [...logs];
+        
+        if (selectedSources.length > 0) {
+          filteredLogs = filteredLogs.filter(log => selectedSources.includes(log.transactionSourceName));
+        }
+        
+        // If countries are selected, only show those countries, otherwise show all
+        const countryStatsData: CountryStats = {};
+        
+        filteredLogs.forEach(log => {
+          // Skip if we're filtering by countries and this country is not selected
+          if (selectedCountries.length > 0 && !selectedCountries.includes(log.country_code)) {
+            return;
+          }
+          
+          if (!countryStatsData[log.country_code]) {
+            countryStatsData[log.country_code] = 0;
+          }
+          countryStatsData[log.country_code] += log.recordCount;
+        });
+        
+        setCountryStats(countryStatsData);
         setError(null);
       } catch (err) {
         setError('Failed to fetch country statistics');
@@ -36,7 +63,7 @@ const CountryChart: React.FC<CountryChartProps> = ({ dateRange }) => {
     };
 
     getCountryStats();
-  }, [dateRange]);
+  }, [dateRange, selectedCountries, selectedSources]);
 
   if (loading) {
     return (

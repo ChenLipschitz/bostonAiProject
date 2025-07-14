@@ -10,7 +10,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { fetchProgressStats } from '../services/api';
+import { fetchProgressStats, fetchLogs } from '../services/api';
 import { ProgressStats } from '../types';
 import { Dayjs } from 'dayjs';
 
@@ -28,9 +28,11 @@ interface ProgressChartProps {
     startDate: Dayjs | null;
     endDate: Dayjs | null;
   };
+  selectedCountries: string[];
+  selectedSources: string[];
 }
 
-const ProgressChart: React.FC<ProgressChartProps> = ({ dateRange }) => {
+const ProgressChart: React.FC<ProgressChartProps> = ({ dateRange, selectedCountries, selectedSources }) => {
   const [progressStats, setProgressStats] = useState<ProgressStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,8 +41,43 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ dateRange }) => {
     const getProgressStats = async () => {
       try {
         setLoading(true);
-        const data = await fetchProgressStats(dateRange);
-        setProgressStats(data);
+        
+        // Fetch logs instead of pre-aggregated stats to apply client-side filtering
+        const logs = await fetchLogs(dateRange);
+        
+        // Filter logs by selected countries and sources if any are selected
+        let filteredLogs = [...logs];
+        
+        if (selectedCountries.length > 0) {
+          filteredLogs = filteredLogs.filter(log => selectedCountries.includes(log.country_code));
+        }
+        
+        if (selectedSources.length > 0) {
+          filteredLogs = filteredLogs.filter(log => selectedSources.includes(log.transactionSourceName));
+        }
+        
+        // Calculate progress stats from filtered logs
+        const progressStatsData: ProgressStats = {
+          totalRecordsInFeed: 0,
+          totalJobsFailIndexed: 0,
+          totalJobsInFeed: 0,
+          totalJobsSentToEnrich: 0,
+          totalJobsDontHaveMetadata: 0,
+          totalJobsDontHaveMetadataV2: 0,
+          totalJobsSentToIndex: 0
+        };
+        
+        filteredLogs.forEach(log => {
+          progressStatsData.totalRecordsInFeed += log.progress.TOTAL_RECORDS_IN_FEED || 0;
+          progressStatsData.totalJobsFailIndexed += log.progress.TOTAL_JOBS_FAIL_INDEXED || 0;
+          progressStatsData.totalJobsInFeed += log.progress.TOTAL_JOBS_IN_FEED || 0;
+          progressStatsData.totalJobsSentToEnrich += log.progress.TOTAL_JOBS_SENT_TO_ENRICH || 0;
+          progressStatsData.totalJobsDontHaveMetadata += log.progress.TOTAL_JOBS_DONT_HAVE_METADATA || 0;
+          progressStatsData.totalJobsDontHaveMetadataV2 += log.progress.TOTAL_JOBS_DONT_HAVE_METADATA_V2 || 0;
+          progressStatsData.totalJobsSentToIndex += log.progress.TOTAL_JOBS_SENT_TO_INDEX || 0;
+        });
+        
+        setProgressStats(progressStatsData);
         setError(null);
       } catch (err) {
         setError('Failed to fetch progress statistics');
@@ -51,7 +88,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ dateRange }) => {
     };
 
     getProgressStats();
-  }, [dateRange]);
+  }, [dateRange, selectedCountries, selectedSources]);
 
   if (loading) {
     return (
