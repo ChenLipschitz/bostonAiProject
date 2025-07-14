@@ -9,6 +9,7 @@ A full-stack web application that visualizes statistics from a MongoDB logs coll
 - Status distribution chart
 - Progress metrics chart
 - Logs table with recent entries
+- Date range picker for filtering logs by timestamp
 
 ## Tech Stack
 
@@ -104,9 +105,13 @@ Access the application at:
 ## API Endpoints
 
 - `GET /api/logs` - Get all logs
+  - Query parameters: `startDate`, `endDate` (ISO date strings)
 - `GET /api/stats/country` - Get country statistics
+  - Query parameters: `startDate`, `endDate` (ISO date strings)
 - `GET /api/stats/status` - Get status statistics
+  - Query parameters: `startDate`, `endDate` (ISO date strings)
 - `GET /api/stats/progress` - Get progress statistics
+  - Query parameters: `startDate`, `endDate` (ISO date strings)
 
 ## MongoDB Integration
 
