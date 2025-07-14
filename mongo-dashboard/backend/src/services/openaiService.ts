@@ -5,6 +5,9 @@ import { MongoClient, Collection } from 'mongodb';
 dotenv.config();
 
 // Initialize OpenAI
+const apiKey = process.env.OPENAI_API_KEY;
+const isValidApiKey = apiKey && !apiKey.includes('your-openai-api-key');
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -140,6 +143,11 @@ async function formatQueryResults(userQuestion: string, results: any): Promise<s
 
 // Main function to process a user question
 export async function processQuestion(userQuestion: string): Promise<string> {
+  // Check if API key is valid
+  if (!isValidApiKey) {
+    return "The OpenAI API key is not configured. Please update the OPENAI_API_KEY in the .env file with a valid API key.";
+  }
+
   try {
     // Step 1: Generate MongoDB query
     const queryString = await generateMongoQuery(userQuestion);
@@ -167,6 +175,11 @@ export async function processQuestion(userQuestion: string): Promise<string> {
 
 // Function to handle ambiguous or unsupported questions
 export async function handleAmbiguousQuestion(userQuestion: string): Promise<string> {
+  // Check if API key is valid
+  if (!isValidApiKey) {
+    return "The OpenAI API key is not configured. Please update the OPENAI_API_KEY in the .env file with a valid API key.";
+  }
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
