@@ -15,7 +15,7 @@ A full-stack web application that visualizes statistics from a MongoDB logs coll
 ### Backend
 - Node.js
 - Express.js
-- MongoDB (connection to MongoDB on port 27017)
+- Sample data (simulating MongoDB data)
 
 ### Frontend
 - React
@@ -47,7 +47,6 @@ mongo-dashboard/
 ### Prerequisites
 
 - Node.js (v14 or higher)
-- MongoDB running on port 27017
 
 ### Installation
 
@@ -82,13 +81,21 @@ Access the application at:
 ## API Endpoints
 
 - `GET /api/logs` - Get all logs
-- `GET /api/stats/countries` - Get country statistics
+- `GET /api/stats/country` - Get country statistics
 - `GET /api/stats/status` - Get status statistics
 - `GET /api/stats/progress` - Get progress statistics
 
+## MongoDB Integration
+
+The application is designed to work with MongoDB, but currently uses sample data. To connect to a real MongoDB instance:
+
+1. Ensure MongoDB is running on port 27017
+2. Update the server.js file to use the MongoDB connection code
+3. Set the correct database and collection names in the .env file
+
 ## Data Format
 
-The application works with MongoDB logs in the following format:
+The application works with logs in the following format:
 
 ```json
 {
