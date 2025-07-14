@@ -1,0 +1,44 @@
+[dotenv@17.2.0] injecting env (4) from .env (tip: ⚙️  suppress all logs with { quiet: true })
+MongoDB connection error: MongoServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017
+    at Topology.selectServer (/workspace/mongo-dashboard/backend/node_modules/mongodb/lib/sdam/topology.js:326:38)
+    at async Topology._connect (/workspace/mongo-dashboard/backend/node_modules/mongodb/lib/sdam/topology.js:200:28)
+    at async Topology.connect (/workspace/mongo-dashboard/backend/node_modules/mongodb/lib/sdam/topology.js:152:13)
+    at async topologyConnect (/workspace/mongo-dashboard/backend/node_modules/mongodb/lib/mongo_client.js:246:17)
+    at async MongoClient._connect (/workspace/mongo-dashboard/backend/node_modules/mongodb/lib/mongo_client.js:259:13)
+    at async MongoClient.connect (/workspace/mongo-dashboard/backend/node_modules/mongodb/lib/mongo_client.js:184:13)
+    at async connectToMongo (/workspace/mongo-dashboard/backend/server.js:19:5) {
+  errorLabelSet: Set(0) {},
+  reason: TopologyDescription {
+    type: 'Unknown',
+    servers: Map(1) { 'localhost:27017' => [ServerDescription] },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    setName: null,
+    maxElectionId: null,
+    maxSetVersion: null,
+    commonWireVersion: 0,
+    logicalSessionTimeoutMinutes: null
+  },
+  code: undefined,
+  [cause]: MongoNetworkError: connect ECONNREFUSED 127.0.0.1:27017
+      at Socket.<anonymous> (/workspace/mongo-dashboard/backend/node_modules/mongodb/lib/cmap/connect.js:286:44)
+      at Object.onceWrapper (node:events:633:26)
+      at Socket.emit (node:events:518:28)
+      at emitErrorNT (node:internal/streams/destroy:170:8)
+      at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+      at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+    errorLabelSet: Set(1) { 'ResetPool' },
+    beforeHandshake: false,
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:27017
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1637:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 27017
+    }
+  }
+}
+Server running on port 12000
