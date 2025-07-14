@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Grid, Divider } from '@mui/material';
+import { Container, Typography, Box, Divider } from '@mui/material';
 import CountryChart from './CountryChart';
 import StatusChart from './StatusChart';
 import ProgressChart from './ProgressChart';
@@ -71,29 +71,29 @@ const Dashboard: React.FC = () => {
         Data Distribution
       </Typography>
       
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={4}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3, mb: 3 }}>
+        <Box>
           <CountryChart 
             dateRange={dateRange} 
             selectedCountries={selectedCountries}
             selectedSources={selectedSources}
           />
-        </Grid>
-        <Grid item xs={12} md={4}>
+        </Box>
+        <Box>
           <StatusChart 
             dateRange={dateRange} 
             selectedCountries={selectedCountries}
             selectedSources={selectedSources}
           />
-        </Grid>
-        <Grid item xs={12} md={4}>
+        </Box>
+        <Box>
           <ProgressChart 
             dateRange={dateRange} 
             selectedCountries={selectedCountries}
             selectedSources={selectedSources}
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
       
       <Divider sx={{ my: 3 }} />
       

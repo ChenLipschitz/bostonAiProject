@@ -3,7 +3,6 @@ import {
   Card, 
   CardContent, 
   Typography, 
-  Grid, 
   Box, 
   CircularProgress,
   Paper,
@@ -200,77 +199,69 @@ const MetricsCard: React.FC<MetricsCardProps> = ({ dateRange, selectedCountries,
         <Typography variant="h6" gutterBottom>
           Key Metrics Dashboard
         </Typography>
-        <Grid container spacing={2}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }}>
           {/* First row */}
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Total Logs
-              </Typography>
-              <Typography variant="h4">
-                {metrics.totalLogs.toLocaleString()}
-                {renderDelta(metrics.logsDelta)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {metrics.completedPercentage}% completed
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Total Records
-              </Typography>
-              <Typography variant="h4">
-                {metrics.totalRecords.toLocaleString()}
-                {renderDelta(metrics.recordsDelta)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Avg {metrics.avgRecordsPerLog.toLocaleString()} per log
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Unique References
-              </Typography>
-              <Typography variant="h4">
-                {metrics.totalUniqueRefs.toLocaleString()}
-                {renderDelta(metrics.uniqueRefsDelta)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Avg {metrics.avgUniqueRefsPerLog.toLocaleString()} per log
-              </Typography>
-            </Paper>
-          </Grid>
+          <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Total Logs
+            </Typography>
+            <Typography variant="h4">
+              {metrics.totalLogs.toLocaleString()}
+              {renderDelta(metrics.logsDelta)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {metrics.completedPercentage}% completed
+            </Typography>
+          </Paper>
           
-          {/* Second row */}
-          <Grid item xs={12}>
-            <Divider sx={{ my: 1 }} />
-          </Grid>
+          <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Total Records
+            </Typography>
+            <Typography variant="h4">
+              {metrics.totalRecords.toLocaleString()}
+              {renderDelta(metrics.recordsDelta)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Avg {metrics.avgRecordsPerLog.toLocaleString()} per log
+            </Typography>
+          </Paper>
           
-          <Grid item xs={12} md={6}>
-            <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Countries
-              </Typography>
-              <Typography variant="h5">
-                {metrics.countriesCount.toLocaleString()}
-              </Typography>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Transaction Sources
-              </Typography>
-              <Typography variant="h5">
-                {metrics.sourcesCount.toLocaleString()}
-              </Typography>
-            </Paper>
-          </Grid>
-        </Grid>
+          <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Unique References
+            </Typography>
+            <Typography variant="h4">
+              {metrics.totalUniqueRefs.toLocaleString()}
+              {renderDelta(metrics.uniqueRefsDelta)}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Avg {metrics.avgUniqueRefsPerLog.toLocaleString()} per log
+            </Typography>
+          </Paper>
+        </Box>
+        
+        <Divider sx={{ my: 2 }} />
+        
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
+          <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Countries
+            </Typography>
+            <Typography variant="h5">
+              {metrics.countriesCount.toLocaleString()}
+            </Typography>
+          </Paper>
+          
+          <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Transaction Sources
+            </Typography>
+            <Typography variant="h5">
+              {metrics.sourcesCount.toLocaleString()}
+            </Typography>
+          </Paper>
+        </Box>
       </CardContent>
     </Card>
   );

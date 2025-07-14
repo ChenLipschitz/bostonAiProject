@@ -123,13 +123,14 @@ const TrendChart: React.FC<TrendChartProps> = ({ dateRange, selectedCountries, s
     : 0;
 
   // Identify outliers (values that are 50% higher than the average)
-  const recordOutliers = recordCounts.map((count, index) => 
-    count > avgRecordCount * 1.5 ? { x: days[index], y: count } : null
-  ).filter(Boolean);
-
-  const uniqueRefOutliers = uniqueRefCounts.map((count, index) => 
-    count > avgUniqueRefCount * 1.5 ? { x: days[index], y: count } : null
-  ).filter(Boolean);
+  // Instead of using point objects, we'll use sparse arrays for outliers
+  const recordOutliersData = days.map((day, index) => 
+    recordCounts[index] > avgRecordCount * 1.5 ? recordCounts[index] : null
+  );
+  
+  const uniqueRefOutliersData = days.map((day, index) => 
+    uniqueRefCounts[index] > avgUniqueRefCount * 1.5 ? uniqueRefCounts[index] : null
+  );
 
   const data = {
     labels: days,
@@ -161,22 +162,24 @@ const TrendChart: React.FC<TrendChartProps> = ({ dateRange, selectedCountries, s
       // Outliers for Record Count
       {
         label: 'Record Count Outliers',
-        data: recordOutliers,
+        data: recordOutliersData,
         borderColor: 'rgba(255, 99, 132, 1)',
         backgroundColor: 'rgba(255, 99, 132, 1)',
         pointRadius: 6,
         pointHoverRadius: 8,
-        showLine: false,
+        fill: false,
+        tension: 0,
       },
       // Outliers for Unique Reference Count
       {
         label: 'Unique Ref Count Outliers',
-        data: uniqueRefOutliers,
+        data: uniqueRefOutliersData,
         borderColor: 'rgba(54, 162, 235, 1)',
         backgroundColor: 'rgba(54, 162, 235, 1)',
         pointRadius: 6,
         pointHoverRadius: 8,
-        showLine: false,
+        fill: false,
+        tension: 0,
       },
     ],
   };
