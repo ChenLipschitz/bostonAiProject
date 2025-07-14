@@ -27,19 +27,25 @@ A full-stack web application that visualizes statistics from a MongoDB logs coll
 
 ```
 mongo-dashboard/
-├── backend/             # Node.js Express backend
-│   ├── server.js        # Main server file
-│   ├── .env             # Environment variables
-│   └── package.json     # Backend dependencies
-├── frontend/            # React TypeScript frontend
+├── backend/                  # Node.js Express backend
+│   ├── server.js             # Main server file
+│   ├── server-with-mongodb.js # MongoDB-enabled server
+│   ├── mongodb-connection.js # MongoDB connection module
+│   ├── .env                  # Environment variables
+│   └── package.json          # Backend dependencies
+├── frontend/                 # React TypeScript frontend
 │   ├── src/
-│   │   ├── components/  # React components
-│   │   ├── services/    # API services
-│   │   ├── types/       # TypeScript interfaces
-│   │   └── App.tsx      # Main application component
-│   ├── package.json     # Frontend dependencies
-│   └── tsconfig.json    # TypeScript configuration
-└── run-app.sh           # Script to run both servers
+│   │   ├── components/       # React components
+│   │   ├── services/         # API services
+│   │   ├── types/            # TypeScript interfaces
+│   │   └── App.tsx           # Main application component
+│   ├── package.json          # Frontend dependencies
+│   └── tsconfig.json         # TypeScript configuration
+├── run-app.sh                # Script to run both servers
+├── run-with-mongodb.sh       # Script to run with MongoDB
+├── check-mongo-connection.js # Script to test MongoDB connection
+├── insert-sample-data.js     # Script to insert sample data
+└── MONGODB_SETUP.md          # MongoDB setup instructions
 ```
 
 ## Getting Started
@@ -47,6 +53,7 @@ mongo-dashboard/
 ### Prerequisites
 
 - Node.js (v14 or higher)
+- MongoDB (for MongoDB integration)
 
 ### Installation
 
@@ -64,6 +71,8 @@ mongo-dashboard/
 
 ### Running the Application
 
+#### Without MongoDB (using sample data)
+
 Run both servers with the provided script:
 
 ```
@@ -71,8 +80,22 @@ Run both servers with the provided script:
 ```
 
 This will start:
-- Backend server on port 12000
+- Backend server on port 12000 (with sample data)
 - Frontend server on port 12001
+
+#### With MongoDB
+
+Run the application with MongoDB support:
+
+```
+./run-with-mongodb.sh
+```
+
+This will:
+1. Check if MongoDB is running
+2. Install the MongoDB driver if needed
+3. Use the MongoDB-enabled server file
+4. Start both servers
 
 Access the application at:
 - Backend API: http://localhost:12000
@@ -89,9 +112,36 @@ Access the application at:
 
 The application is designed to work with MongoDB, but currently uses sample data. To connect to a real MongoDB instance:
 
+### Option 1: Using the MongoDB-enabled script
+
 1. Ensure MongoDB is running on port 27017
-2. Update the server.js file to use the MongoDB connection code
-3. Set the correct database and collection names in the .env file
+2. Run the application with MongoDB support:
+   ```bash
+   ./run-with-mongodb.sh
+   ```
+
+### Option 2: Manual Setup
+
+1. Ensure MongoDB is running on port 27017
+2. Check if MongoDB is properly connected:
+   ```bash
+   node check-mongo-connection.js
+   ```
+3. Insert sample data into MongoDB:
+   ```bash
+   node insert-sample-data.js
+   ```
+4. Replace the server.js file with the MongoDB-enabled version:
+   ```bash
+   cp backend/server-with-mongodb.js backend/server.js
+   ```
+5. Set the correct database and collection names in the .env file:
+   ```
+   MONGODB_URI=mongodb://localhost:27017/local
+   COLLECTION_NAME=logs
+   ```
+
+For detailed MongoDB setup instructions, see [MONGODB_SETUP.md](MONGODB_SETUP.md)
 
 ## Data Format
 
