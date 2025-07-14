@@ -39,11 +39,33 @@ async function connectToMongo() {
   }
 }
 
+// Helper function to build date filter query
+const buildDateFilter = (req) => {
+  const { startDate, endDate } = req.query;
+  const filter = {};
+  
+  if (startDate || endDate) {
+    filter.timestamp = {};
+    
+    if (startDate) {
+      filter.timestamp.$gte = new Date(startDate);
+    }
+    
+    if (endDate) {
+      filter.timestamp.$lte = new Date(endDate);
+    }
+  }
+  
+  return filter;
+};
+
 // Routes
 app.get('/api/logs', async (req, res) => {
   try {
-    console.log('Fetching logs from MongoDB');
-    const logs = await logsCollection.find({}).toArray();
+    const filter = buildDateFilter(req);
+    console.log('Fetching logs from MongoDB with filter:', filter);
+    
+    const logs = await logsCollection.find(filter).toArray();
     res.json(logs);
   } catch (err) {
     console.error('Error fetching logs:', err);
@@ -54,8 +76,10 @@ app.get('/api/logs', async (req, res) => {
 // Statistics endpoints
 app.get('/api/stats/country', async (req, res) => {
   try {
-    console.log('Fetching country stats from MongoDB');
-    const logs = await logsCollection.find({}).toArray();
+    const filter = buildDateFilter(req);
+    console.log('Fetching country stats from MongoDB with filter:', filter);
+    
+    const logs = await logsCollection.find(filter).toArray();
     const countryStats = {};
     logs.forEach(log => {
       if (!countryStats[log.country_code]) {
@@ -72,8 +96,10 @@ app.get('/api/stats/country', async (req, res) => {
 
 app.get('/api/stats/status', async (req, res) => {
   try {
-    console.log('Fetching status stats from MongoDB');
-    const logs = await logsCollection.find({}).toArray();
+    const filter = buildDateFilter(req);
+    console.log('Fetching status stats from MongoDB with filter:', filter);
+    
+    const logs = await logsCollection.find(filter).toArray();
     const statusStats = {};
     logs.forEach(log => {
       if (!statusStats[log.status]) {
@@ -90,8 +116,10 @@ app.get('/api/stats/status', async (req, res) => {
 
 app.get('/api/stats/progress', async (req, res) => {
   try {
-    console.log('Fetching progress stats from MongoDB');
-    const logs = await logsCollection.find({}).toArray();
+    const filter = buildDateFilter(req);
+    console.log('Fetching progress stats from MongoDB with filter:', filter);
+    
+    const logs = await logsCollection.find(filter).toArray();
     const progressStats = {
       totalRecordsInFeed: 0,
       totalJobsFailIndexed: 0,

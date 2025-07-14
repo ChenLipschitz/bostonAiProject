@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Log, CountryStats, StatusStats, ProgressStats } from '../types';
+import { Dayjs } from 'dayjs';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:12000/api';
 
@@ -10,22 +11,67 @@ const api = axios.create({
   },
 });
 
-export const fetchLogs = async (): Promise<Log[]> => {
-  const response = await api.get<Log[]>('/logs');
+interface DateRangeParams {
+  startDate?: string;
+  endDate?: string;
+}
+
+export const fetchLogs = async (dateRange?: { startDate: Dayjs | null; endDate: Dayjs | null }): Promise<Log[]> => {
+  const params: DateRangeParams = {};
+  
+  if (dateRange?.startDate) {
+    params.startDate = dateRange.startDate.toISOString();
+  }
+  
+  if (dateRange?.endDate) {
+    params.endDate = dateRange.endDate.toISOString();
+  }
+  
+  const response = await api.get<Log[]>('/logs', { params });
   return response.data;
 };
 
-export const fetchCountryStats = async (): Promise<CountryStats> => {
-  const response = await api.get<CountryStats>('/stats/country');
+export const fetchCountryStats = async (dateRange?: { startDate: Dayjs | null; endDate: Dayjs | null }): Promise<CountryStats> => {
+  const params: DateRangeParams = {};
+  
+  if (dateRange?.startDate) {
+    params.startDate = dateRange.startDate.toISOString();
+  }
+  
+  if (dateRange?.endDate) {
+    params.endDate = dateRange.endDate.toISOString();
+  }
+  
+  const response = await api.get<CountryStats>('/stats/country', { params });
   return response.data;
 };
 
-export const fetchStatusStats = async (): Promise<StatusStats> => {
-  const response = await api.get<StatusStats>('/stats/status');
+export const fetchStatusStats = async (dateRange?: { startDate: Dayjs | null; endDate: Dayjs | null }): Promise<StatusStats> => {
+  const params: DateRangeParams = {};
+  
+  if (dateRange?.startDate) {
+    params.startDate = dateRange.startDate.toISOString();
+  }
+  
+  if (dateRange?.endDate) {
+    params.endDate = dateRange.endDate.toISOString();
+  }
+  
+  const response = await api.get<StatusStats>('/stats/status', { params });
   return response.data;
 };
 
-export const fetchProgressStats = async (): Promise<ProgressStats> => {
-  const response = await api.get<ProgressStats>('/stats/progress');
+export const fetchProgressStats = async (dateRange?: { startDate: Dayjs | null; endDate: Dayjs | null }): Promise<ProgressStats> => {
+  const params: DateRangeParams = {};
+  
+  if (dateRange?.startDate) {
+    params.startDate = dateRange.startDate.toISOString();
+  }
+  
+  if (dateRange?.endDate) {
+    params.endDate = dateRange.endDate.toISOString();
+  }
+  
+  const response = await api.get<ProgressStats>('/stats/progress', { params });
   return response.data;
 };

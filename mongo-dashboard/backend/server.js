@@ -164,39 +164,76 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Helper function to filter logs by date range
+const filterLogsByDateRange = (logs, startDate, endDate) => {
+  if (!startDate && !endDate) {
+    return logs;
+  }
+  
+  return logs.filter(log => {
+    const logDate = new Date(log.timestamp);
+    
+    if (startDate && endDate) {
+      return logDate >= new Date(startDate) && logDate <= new Date(endDate);
+    } else if (startDate) {
+      return logDate >= new Date(startDate);
+    } else if (endDate) {
+      return logDate <= new Date(endDate);
+    }
+    
+    return true;
+  });
+};
+
 // Routes
 app.get('/api/logs', (req, res) => {
-  console.log('Fetching logs');
-  res.json(sampleLogs);
+  const { startDate, endDate } = req.query;
+  console.log(`Fetching logs with date range: ${startDate || 'none'} to ${endDate || 'none'}`);
+  
+  const filteredLogs = filterLogsByDateRange(sampleLogs, startDate, endDate);
+  res.json(filteredLogs);
 });
 
 // Statistics endpoints
 app.get('/api/stats/country', (req, res) => {
-  console.log('Fetching country stats');
+  const { startDate, endDate } = req.query;
+  console.log(`Fetching country stats with date range: ${startDate || 'none'} to ${endDate || 'none'}`);
+  
+  const filteredLogs = filterLogsByDateRange(sampleLogs, startDate, endDate);
   const countryStats = {};
-  sampleLogs.forEach(log => {
+  
+  filteredLogs.forEach(log => {
     if (!countryStats[log.country_code]) {
       countryStats[log.country_code] = 0;
     }
     countryStats[log.country_code] += log.recordCount;
   });
+  
   res.json(countryStats);
 });
 
 app.get('/api/stats/status', (req, res) => {
-  console.log('Fetching status stats');
+  const { startDate, endDate } = req.query;
+  console.log(`Fetching status stats with date range: ${startDate || 'none'} to ${endDate || 'none'}`);
+  
+  const filteredLogs = filterLogsByDateRange(sampleLogs, startDate, endDate);
   const statusStats = {};
-  sampleLogs.forEach(log => {
+  
+  filteredLogs.forEach(log => {
     if (!statusStats[log.status]) {
       statusStats[log.status] = 0;
     }
     statusStats[log.status]++;
   });
+  
   res.json(statusStats);
 });
 
 app.get('/api/stats/progress', (req, res) => {
-  console.log('Fetching progress stats');
+  const { startDate, endDate } = req.query;
+  console.log(`Fetching progress stats with date range: ${startDate || 'none'} to ${endDate || 'none'}`);
+  
+  const filteredLogs = filterLogsByDateRange(sampleLogs, startDate, endDate);
   const progressStats = {
     totalRecordsInFeed: 0,
     totalJobsFailIndexed: 0,
@@ -207,7 +244,7 @@ app.get('/api/stats/progress', (req, res) => {
     totalJobsSentToIndex: 0
   };
   
-  sampleLogs.forEach(log => {
+  filteredLogs.forEach(log => {
     progressStats.totalRecordsInFeed += log.progress.TOTAL_RECORDS_IN_FEED || 0;
     progressStats.totalJobsFailIndexed += log.progress.TOTAL_JOBS_FAIL_INDEXED || 0;
     progressStats.totalJobsInFeed += log.progress.TOTAL_JOBS_IN_FEED || 0;

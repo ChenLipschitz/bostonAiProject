@@ -4,10 +4,18 @@ import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { fetchStatusStats } from '../services/api';
 import { StatusStats } from '../types';
+import { Dayjs } from 'dayjs';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const StatusChart: React.FC = () => {
+interface StatusChartProps {
+  dateRange: {
+    startDate: Dayjs | null;
+    endDate: Dayjs | null;
+  };
+}
+
+const StatusChart: React.FC<StatusChartProps> = ({ dateRange }) => {
   const [statusStats, setStatusStats] = useState<StatusStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,8 +23,10 @@ const StatusChart: React.FC = () => {
   useEffect(() => {
     const getStatusStats = async () => {
       try {
-        const data = await fetchStatusStats();
+        setLoading(true);
+        const data = await fetchStatusStats(dateRange);
         setStatusStats(data);
+        setError(null);
       } catch (err) {
         setError('Failed to fetch status statistics');
         console.error(err);
@@ -26,7 +36,7 @@ const StatusChart: React.FC = () => {
     };
 
     getStatusStats();
-  }, []);
+  }, [dateRange]);
 
   if (loading) {
     return (

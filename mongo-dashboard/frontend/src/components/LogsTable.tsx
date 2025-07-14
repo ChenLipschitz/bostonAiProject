@@ -14,8 +14,16 @@ import {
 } from '@mui/material';
 import { fetchLogs } from '../services/api';
 import { Log } from '../types';
+import { Dayjs } from 'dayjs';
 
-const LogsTable: React.FC = () => {
+interface LogsTableProps {
+  dateRange: {
+    startDate: Dayjs | null;
+    endDate: Dayjs | null;
+  };
+}
+
+const LogsTable: React.FC<LogsTableProps> = ({ dateRange }) => {
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,8 +31,10 @@ const LogsTable: React.FC = () => {
   useEffect(() => {
     const getLogs = async () => {
       try {
-        const data = await fetchLogs();
+        setLoading(true);
+        const data = await fetchLogs(dateRange);
         setLogs(data);
+        setError(null);
       } catch (err) {
         setError('Failed to fetch logs');
         console.error(err);
@@ -34,7 +44,7 @@ const LogsTable: React.FC = () => {
     };
 
     getLogs();
-  }, []);
+  }, [dateRange]);
 
   if (loading) {
     return (
@@ -47,7 +57,7 @@ const LogsTable: React.FC = () => {
   if (error || logs.length === 0) {
     return (
       <Card sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Typography color="error">{error || 'No logs available'}</Typography>
+        <Typography color="error">{error || 'No logs available for the selected date range'}</Typography>
       </Card>
     );
   }
@@ -56,7 +66,7 @@ const LogsTable: React.FC = () => {
     <Card sx={{ height: '100%' }}>
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          Recent Logs
+          Logs {logs.length > 0 ? `(${logs.length})` : ''}
         </Typography>
         <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
           <Table stickyHeader aria-label="logs table">

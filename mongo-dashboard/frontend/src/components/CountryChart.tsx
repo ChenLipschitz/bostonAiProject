@@ -4,10 +4,18 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { fetchCountryStats } from '../services/api';
 import { CountryStats } from '../types';
+import { Dayjs } from 'dayjs';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const CountryChart: React.FC = () => {
+interface CountryChartProps {
+  dateRange: {
+    startDate: Dayjs | null;
+    endDate: Dayjs | null;
+  };
+}
+
+const CountryChart: React.FC<CountryChartProps> = ({ dateRange }) => {
   const [countryStats, setCountryStats] = useState<CountryStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,8 +23,10 @@ const CountryChart: React.FC = () => {
   useEffect(() => {
     const getCountryStats = async () => {
       try {
-        const data = await fetchCountryStats();
+        setLoading(true);
+        const data = await fetchCountryStats(dateRange);
         setCountryStats(data);
+        setError(null);
       } catch (err) {
         setError('Failed to fetch country statistics');
         console.error(err);
@@ -26,7 +36,7 @@ const CountryChart: React.FC = () => {
     };
 
     getCountryStats();
-  }, []);
+  }, [dateRange]);
 
   if (loading) {
     return (

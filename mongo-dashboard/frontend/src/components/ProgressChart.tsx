@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { fetchProgressStats } from '../services/api';
 import { ProgressStats } from '../types';
+import { Dayjs } from 'dayjs';
 
 ChartJS.register(
   CategoryScale,
@@ -22,7 +23,14 @@ ChartJS.register(
   Legend
 );
 
-const ProgressChart: React.FC = () => {
+interface ProgressChartProps {
+  dateRange: {
+    startDate: Dayjs | null;
+    endDate: Dayjs | null;
+  };
+}
+
+const ProgressChart: React.FC<ProgressChartProps> = ({ dateRange }) => {
   const [progressStats, setProgressStats] = useState<ProgressStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,8 +38,10 @@ const ProgressChart: React.FC = () => {
   useEffect(() => {
     const getProgressStats = async () => {
       try {
-        const data = await fetchProgressStats();
+        setLoading(true);
+        const data = await fetchProgressStats(dateRange);
         setProgressStats(data);
+        setError(null);
       } catch (err) {
         setError('Failed to fetch progress statistics');
         console.error(err);
@@ -41,7 +51,7 @@ const ProgressChart: React.FC = () => {
     };
 
     getProgressStats();
-  }, []);
+  }, [dateRange]);
 
   if (loading) {
     return (
