@@ -148,24 +148,22 @@ The application works with logs in the following format:
 
 ### General Overview
 
-<div align="center">
-  <img src="images/dashboard.jpg" width="30%" height="100px"/>
-  <img src="images/dashboard_trend_analysis.jpg" width="30%" height="100px"/>
-  <img src="images/dashboard_data_distribution.jpg" width="30%" height="100px"/>
-</div>
+![Dashboard 1](images/dashboard.jpg)
+![Dashboard 1](images/dashboard_trend_analysis.jpg)
+![Dashboard 1](images/dashboard_data_distribution.jpg)
 
 ### Filtering by Country (US)
 
-<div align="center">
-  <img src="images/dashboard_US.jpg" width="30%" height="100px"/>
-  <img src="images/dashboard_trend_analysis_US.jpg" width="30%"height="100px" />
-  <img src="images/dashboard_data_distribution_US.jpg" width="30%" height="100px"/>
-</div>
+![Dashboard 2](images/dashboard_US.jpg)
+![Dashboard 2](images/dashboard_trend_analysis_US.jpg) ![Dashboard 2](images/dashboard_data_distribution_US.jpg)
 
 ## AI Chat Assistant Examples
 
-<div align="center">
-  <img src="images/AI_assistant_landing.jpg" width="30%" height="100px"/>
-  <img src="images/chat_record_count_by_country_code.jpg" width="30%"height="100px" />
-  <img src="images/chat_top_client.jpg" width="30%" height="100px"/>
-</div>
+### General Overview
+![Dashboard 3](images/AI_assistant_landing.jpg)
+
+
+### Queries
+![Dashboard 3](images/chat_avg.jpg) 
+![Dashboard 3](images/chat_record_count_by_country_code.jpg)
+![Dashboard 3](images/chat_top_client.jpg)
