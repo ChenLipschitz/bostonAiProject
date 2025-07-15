@@ -7,7 +7,6 @@ boston-dashboard/
 │   ├── server-with-mongodb.js # MongoDB-enabled server
 │   ├── src                    # src code files 
 │   ├── dist                  # java script compiled files (necessary!)
-│   ├── mongodb-connection.js # MongoDB connection module
 │   ├── .env                  # Environment variables
 │   └── package.json          # Backend dependencies
 │   └── package-lock.json          # Backend dependencies
@@ -21,7 +20,6 @@ boston-dashboard/
 │   ├── package.json          # Frontend dependencies
 │   └── tsconfig.json         # TypeScript configuration
 ├── start-servers.js          # Script to start all servers (backend and frontend, assums mongoDB running on localhost:27017)
-└── MONGODB_SETUP.md          # MongoDB setup instructions
 ```
 
 
