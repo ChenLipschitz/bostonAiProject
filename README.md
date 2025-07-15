@@ -14,7 +14,7 @@ A full-stack web application that visualizes statistics from job applications.
    - Trend Analysis
 - AI Assistnace that plot charts based on a natural language query
 
-
+openhands
 ## Tech Stack
 
 ### Backend
@@ -27,30 +27,6 @@ A full-stack web application that visualizes statistics from job applications.
 - Material-UI for components
 - Chart.js for data visualization
 
-## Project Structure
-
-```
-boston-dashboard/
-├── backend/                  # Node.js Express backend
-│   ├── server-with-mongodb.js # MongoDB-enabled server
-│   ├── src                    # src code files 
-│   ├── dist                  # java script compiled files (necessary!)
-│   ├── mongodb-connection.js # MongoDB connection module
-│   ├── .env                  # Environment variables
-│   └── package.json          # Backend dependencies
-│   └── package-lock.json          # Backend dependencies
-
-├── frontend/                 # React TypeScript frontend
-│   ├── src/
-│   │   ├── components/       # React components
-│   │   ├── services/         # API services
-│   │   ├── types/            # TypeScript interfaces
-│   │   └── App.tsx           # Main application component
-│   ├── package.json          # Frontend dependencies
-│   └── tsconfig.json         # TypeScript configuration
-├── start-servers.js          # Script to start all servers (backend and frontend, assums mongoDB running on localhost:27017)
-└── MONGODB_SETUP.md          # MongoDB setup instructions
-```
 
 ## Getting Started
 
@@ -129,41 +105,41 @@ The application works with logs in the following format:
 <!--
 ## Dashboard Examples
 
-![Dashboard 1](images/dashboard.jpg)
-![Dashboard 1](images/dashboard_trend_analysis.jpg)
-![Dashboard 1](images/dashboard_data_distribution.jpg)
+![Dashboard 1](boston-dashboard/images/dashboard.jpg)
+![Dashboard 1](boston-dashboard/images/dashboard_trend_analysis.jpg)
+![Dashboard 1](boston-dashboard/images/dashboard_data_distribution.jpg)
 
 
 ### FIltering by a Country (US)
 
-![Dashboard 2](images/dashboard_US.jpg)
-![Dashboard 2](images/dashboard_trend_analysis_US.jpg)
-![Dashboard 2](images/dashboard_data_distribution_US.jpg)
+![Dashboard 2](boston-dashboard/images/dashboard_US.jpg)
+![Dashboard 2](boston-dashboard/images/dashboard_trend_analysis_US.jpg)
+![Dashboard 2](boston-dashboard/images/dashboard_data_distribution_US.jpg)
 
 
 
-![Dashboard 3](images/dashboard3.png) -->
+![Dashboard 3](boston-dashboard/images/dashboard3.png) -->
 
 ## Dashboard Examples
 
 ### General Overview
 
-![Dashboard 1](images/dashboard.jpg)
-![Dashboard 1](images/dashboard_trend_analysis.jpg)
-![Dashboard 1](images/dashboard_data_distribution.jpg)
+![Dashboard 1](boston-dashboard/images/dashboard.jpg)
+![Dashboard 1](boston-dashboard/images/dashboard_trend_analysis.jpg)
+![Dashboard 1](boston-dashboard/images/dashboard_data_distribution.jpg)
 
 ### Filtering by Country (US)
 
-![Dashboard 2](images/dashboard_US.jpg)
-![Dashboard 2](images/dashboard_trend_analysis_US.jpg) ![Dashboard 2](images/dashboard_data_distribution_US.jpg)
+![Dashboard 2](boston-dashboard/images/dashboard_US.jpg)
+![Dashboard 2](boston-dashboard/images/dashboard_trend_analysis_US.jpg) ![Dashboard 2](boston-dashboard/images/dashboard_data_distribution_US.jpg)
 
 ## AI Chat Assistant Examples
 
 ### General Overview
-![Dashboard 3](images/AI_assistant_landing.jpg)
+![Dashboard 3](boston-dashboard/images/AI_assistant_landing.jpg)
 
 
 ### Queries
-![Dashboard 3](images/chat_avg.jpg) 
-![Dashboard 3](images/chat_record_count_by_country_code.jpg)
-![Dashboard 3](images/chat_top_client.jpg)
+![Dashboard 3](boston-dashboard/images/chat_avg.jpg) 
+![Dashboard 3](boston-dashboard/images/chat_record_count_by_country_code.jpg)
+![Dashboard 3](boston-dashboard/images/chat_top_client.jpg)
