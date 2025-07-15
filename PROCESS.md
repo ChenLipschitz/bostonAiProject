@@ -103,10 +103,9 @@ Ensure the JSON uses double quotes for all keys and values.
 
 
 
-## 🧩 Key Design Choices in Full-Stack Applications  
+## Key Design Choices in Full-Stack Applications  
 _(TypeScript + Node.js + MongoDB)_
 
-### 🏗️ Architecture
 
 | Design Choice                          | Description                                                                 |
 |----------------------------------------|-----------------------------------------------------------------------------|
@@ -118,3 +117,9 @@ _(TypeScript + Node.js + MongoDB)_
 | **Secure MongoDB Access**              | Avoid exposing the database directly; always go through controlled backend APIs. Use roles and environment-based URI configs. |
 | **Code Linting & Formatting**          | Enforce consistent code style using tools like ESLint, Prettier, and Husky. |
 
+
+
+## AI Tools
+
+- ChatGPT/Gemini for helping in generating src code.
+- OpenHands for helping in some features (rendering charts in the chat)
