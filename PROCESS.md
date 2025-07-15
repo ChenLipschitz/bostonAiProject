@@ -90,7 +90,7 @@ Ensure the JSON uses double quotes for all keys and values.
 #### Considerations taken into account
 
 
-| ✅ Consideration               | 💡 Purpose                                                                 |
+|  Consideration               |  Purpose                                                                 |
 |-------------------------------|----------------------------------------------------------------------------|
 | **System Role Defined**       | Establishes GPT-4's identity as a MongoDB-aware assistant                  |
 | **Full Field Schema Provided**| Ensures field names and structure match the expected documents             |
