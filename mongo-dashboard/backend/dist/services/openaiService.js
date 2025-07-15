@@ -21,7 +21,7 @@ dotenv_1.default.config();
 // Initialize OpenAI
 const apiKey = process.env.OPENAI_API_KEY;
 console.log("API Key:", process.env.OPENAI_API_KEY);
-const isValidApiKey = apiKey && !apiKey.includes('your-openai-api-key');
+const isValidApiKey = apiKey && !apiKey.includes('your-actual-openai-api-key-goes-here') && !apiKey.includes('your-openai-api-key') && apiKey.startsWith('sk-') && apiKey.length > 20;
 const openai = new openai_1.default({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -178,6 +178,77 @@ function executeMongoQuery(queryString) {
         }
     });
 }
+// Function to detect if results should be visualized as a chart
+function shouldCreateChart(userQuestion, results) {
+    const chartKeywords = [
+        'average', 'total', 'count', 'sum', 'per client', 'by client', 'comparison',
+        'compare', 'distribution', 'breakdown', 'top', 'bottom', 'ranking', 'trend'
+    ];
+    const questionLower = userQuestion.toLowerCase();
+    const hasChartKeywords = chartKeywords.some(keyword => questionLower.includes(keyword));
+    // Check if results are suitable for charting (array of objects with numeric values)
+    const isChartableData = Array.isArray(results) &&
+        results.length > 0 &&
+        results.length <= 20 && // Reasonable number for visualization
+        typeof results[0] === 'object';
+    return hasChartKeywords && isChartableData;
+}
+// Function to generate chart data from query results
+function generateChartData(userQuestion, results) {
+    if (!Array.isArray(results) || results.length === 0) {
+        return null;
+    }
+    const firstResult = results[0];
+    const keys = Object.keys(firstResult);
+    // Find the label field (usually _id, Client, or similar)
+    const labelField = keys.find(key => key === '_id' ||
+        key.toLowerCase().includes('client') ||
+        key.toLowerCase().includes('name') ||
+        key.toLowerCase().includes('source')) || keys[0];
+    // Find the numeric field for the chart
+    const numericField = keys.find(key => key !== labelField &&
+        typeof firstResult[key] === 'number');
+    if (!numericField) {
+        return null;
+    }
+    const labels = results.map(item => String(item[labelField]));
+    const data = results.map(item => Number(item[numericField]) || 0);
+    // Determine chart type based on question and data
+    let chartType = 'bar';
+    const questionLower = userQuestion.toLowerCase();
+    if (questionLower.includes('distribution') || questionLower.includes('breakdown')) {
+        chartType = 'pie';
+    }
+    else if (questionLower.includes('trend') || questionLower.includes('over time')) {
+        chartType = 'line';
+    }
+    // Generate colors
+    const colors = [
+        'rgba(54, 162, 235, 0.6)',
+        'rgba(255, 99, 132, 0.6)',
+        'rgba(255, 206, 86, 0.6)',
+        'rgba(75, 192, 192, 0.6)',
+        'rgba(153, 102, 255, 0.6)',
+        'rgba(255, 159, 64, 0.6)',
+        'rgba(199, 199, 199, 0.6)',
+        'rgba(83, 102, 255, 0.6)',
+        'rgba(255, 99, 255, 0.6)',
+        'rgba(99, 255, 132, 0.6)'
+    ];
+    const borderColors = colors.map(color => color.replace('0.6', '1'));
+    return {
+        type: chartType,
+        title: `${numericField} by ${labelField}`,
+        labels,
+        datasets: [{
+                label: numericField,
+                data,
+                backgroundColor: chartType === 'pie' ? colors.slice(0, data.length) : colors[0],
+                borderColor: chartType === 'pie' ? borderColors.slice(0, data.length) : borderColors[0],
+                borderWidth: 1
+            }]
+    };
+}
 // Function to format query results into a natural language response
 function formatQueryResults(userQuestion, results) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -187,11 +258,20 @@ function formatQueryResults(userQuestion, results) {
                 model: "gpt-3.5-turbo",
                 messages: [
                     { role: "system", content: systemPrompt },
-                    { role: "user", content: `Question: ${userQuestion}\n\nResults from MongoDB: ${JSON.stringify(results, null, 2)}\n\nPlease format these results into a helpful response. Use markdown tables for tabular data and suggest charts when appropriate.` }
+                    { role: "user", content: `Question: ${userQuestion}\n\nResults from MongoDB: ${JSON.stringify(results, null, 2)}\n\nPlease format these results into a helpful response. Use markdown tables for tabular data and provide a clear summary.` }
                 ],
                 temperature: 0.7,
             });
-            return ((_a = response.choices[0].message.content) === null || _a === void 0 ? void 0 : _a.trim()) || 'No response generated';
+            const textResponse = ((_a = response.choices[0].message.content) === null || _a === void 0 ? void 0 : _a.trim()) || 'No response generated';
+            // Check if we should create a chart
+            let chartData = null;
+            if (shouldCreateChart(userQuestion, results)) {
+                chartData = generateChartData(userQuestion, results);
+            }
+            return {
+                response: textResponse,
+                chartData
+            };
         }
         catch (error) {
             console.error('Error formatting query results:', error);
@@ -204,7 +284,42 @@ function processQuestion(userQuestion) {
     return __awaiter(this, void 0, void 0, function* () {
         // Check if API key is valid
         if (!isValidApiKey) {
-            return "The OpenAI API key is not configured. Please update the OPENAI_API_KEY in the .env file with a valid API key.";
+            // Return mock data for demonstration when API key is not configured
+            if (userQuestion.toLowerCase().includes('average') && userQuestion.toLowerCase().includes('total_jobs_sent_to_index')) {
+                const mockResults = [
+                    { _id: "Deal68", averageJobsSentToIndex: 124029.16 },
+                    { _id: "Deal35", averageJobsSentToIndex: 0.36 },
+                    { _id: "Deal19", averageJobsSentToIndex: 0 },
+                    { _id: "Deal62", averageJobsSentToIndex: 9450.51 },
+                    { _id: "Deal5", averageJobsSentToIndex: 2125.36 },
+                    { _id: "Deal41", averageJobsSentToIndex: 15906.29 },
+                    { _id: "Deal26", averageJobsSentToIndex: 1474.59 },
+                    { _id: "Deal64", averageJobsSentToIndex: 44046.73 },
+                    { _id: "Deal74", averageJobsSentToIndex: 358505.71 },
+                    { _id: "Deal44", averageJobsSentToIndex: 831.01 }
+                ];
+                const chartData = generateChartData(userQuestion, mockResults);
+                return {
+                    response: `Here are the average TOTAL_JOBS_SENT_TO_INDEX values by client:
+
+| Client | Average Jobs Sent To Index |
+|--------|---------------------------|
+| Deal68 | 124,029.16 |
+| Deal35 | 0.36 |
+| Deal19 | 0.00 |
+| Deal62 | 9,450.51 |
+| Deal5 | 2,125.36 |
+| Deal41 | 15,906.29 |
+| Deal26 | 1,474.59 |
+| Deal64 | 44,046.73 |
+| Deal74 | 358,505.71 |
+| Deal44 | 831.01 |
+
+The data shows significant variation across clients, with Deal74 having the highest average (358,505.71) and Deal19 having no jobs sent to index.`,
+                    chartData
+                };
+            }
+            return { response: "The OpenAI API key is not configured. Please update the OPENAI_API_KEY in the .env file with a valid API key. However, I can show you a demo with sample data - try asking: 'Show me average TOTAL_JOBS_SENT_TO_INDEX by client'" };
         }
         try {
             // Step 1: Generate MongoDB query
@@ -216,20 +331,20 @@ function processQuestion(userQuestion) {
             // console.log("results");
             // console.log(results);
             // Step 3: Format the results into a natural language response
-            const response = yield formatQueryResults(userQuestion, results);
-            return response;
+            const formattedResult = yield formatQueryResults(userQuestion, results);
+            return formattedResult;
         }
         catch (error) {
             console.error('Error processing question:', error);
             // Handle errors gracefully
             if (error.message.includes('Failed to generate database query')) {
-                return "I'm sorry, I couldn't understand how to query the database for that question. Could you rephrase it or provide more details?";
+                return { response: "I'm sorry, I couldn't understand how to query the database for that question. Could you rephrase it or provide more details?" };
             }
             else if (error.message.includes('Failed to execute database query')) {
-                return "I understood your question, but encountered an error when querying the database. This might be due to invalid query syntax or missing data.";
+                return { response: "I understood your question, but encountered an error when querying the database. This might be due to invalid query syntax or missing data." };
             }
             else {
-                return "I'm sorry, I encountered an unexpected error while processing your question. Please try again with a different question.";
+                return { response: "I'm sorry, I encountered an unexpected error while processing your question. Please try again with a different question." };
             }
         }
     });

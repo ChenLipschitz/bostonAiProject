@@ -40,7 +40,21 @@ export interface ProgressStats {
   totalJobsSentToIndex: number;
 }
 
+export interface ChartData {
+  type: 'bar' | 'line' | 'pie' | 'doughnut';
+  title: string;
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor?: string | string[];
+    borderColor?: string | string[];
+    borderWidth?: number;
+  }[];
+}
+
 export interface ChatResponse {
   response: string;
+  chartData?: ChartData;
   error?: string;
 }

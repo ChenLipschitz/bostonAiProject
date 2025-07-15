@@ -23,8 +23,8 @@ router.post('/chat', (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return res.status(400).json({ error: 'Message is required' });
         }
         // Process the user's question
-        const response = yield (0, openaiService_1.processQuestion)(message);
-        return res.json({ response });
+        const result = yield (0, openaiService_1.processQuestion)(message);
+        return res.json(result);
     }
     catch (error) {
         console.error('Error in chat endpoint:', error);

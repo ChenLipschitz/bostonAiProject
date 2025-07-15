@@ -16,10 +16,13 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { sendChatMessage, clarifyQuestion } from '../services/api';
+import ChatChart from './ChatChart';
+import { ChartData } from '../types';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
+  chartData?: ChartData;
 }
 
 const ChatAssistant: React.FC = () => {
@@ -58,7 +61,8 @@ const ChatAssistant: React.FC = () => {
       // Add assistant response to chat
       const assistantMessage: Message = {
         role: 'assistant',
-        content: response.response
+        content: response.response,
+        chartData: response.chartData
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -182,9 +186,14 @@ const ChatAssistant: React.FC = () => {
                 }}
               >
                 {message.role === 'assistant' ? (
-                  <ReactMarkdown components={components}>
-                    {message.content}
-                  </ReactMarkdown>
+                  <>
+                    <ReactMarkdown components={components}>
+                      {message.content}
+                    </ReactMarkdown>
+                    {message.chartData && (
+                      <ChatChart chartData={message.chartData} />
+                    )}
+                  </>
                 ) : (
                   <Typography>{message.content}</Typography>
                 )}

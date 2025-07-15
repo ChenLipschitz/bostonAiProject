@@ -13,9 +13,9 @@ router.post('/chat', async (req, res) => {
     }
 
     // Process the user's question
-    const response = await processQuestion(message);
+    const result = await processQuestion(message);
     
-    return res.json({ response });
+    return res.json(result);
   } catch (error) {
     console.error('Error in chat endpoint:', error);
     return res.status(500).json({ error: 'Failed to process your question' });
