@@ -14,7 +14,7 @@ A full-stack web application that visualizes statistics from job applications.
    - Trend Analysis
 - AI Assistnace that plot charts based on a natural language query
 
-openhands
+
 ## Tech Stack
 
 ### Backend
@@ -34,18 +34,21 @@ openhands
 
 - Node.js (v14 or higher)
 - MongoDB (for MongoDB integration) running on localhost:27017, can be configured on .env file (``MONGODB_URI``)
+- Need to set a valid OPNEAI key under the .env ```OPENAI_API_KEY```
 
 ### Installation
 
 1. Clone the repository
-2. Install backend dependencies:
+2. Make sure mongodb is running on localhost (0.0.0.0) with port 27017!
+   Assuming all the logs are udner collection - logs (can be configured with env ```COLLECTION_NAME``` in .env file) 
+3. Install backend dependencies:
    ```
-   cd backend
+   cd boston-dashboard/backend
    npm install
    ```
-3. Install frontend dependencies:
+4. Install frontend dependencies:
    ```
-   cd frontend
+   cd boston-dashboard/frontend
    npm install
    ```
 
@@ -56,7 +59,8 @@ openhands
 Run both servers with the provided script:
 
 ```
-./start-servers.sh
+cd boston-dashbaord/
+./start-servers.sh (must be in the folder)
 ```
 
 This will start:
