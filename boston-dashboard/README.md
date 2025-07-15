@@ -126,13 +126,46 @@ The application works with logs in the following format:
  "uniqueRefNumberCount": 9253
 }
 ```
-
+<!--
 ## Dashboard Examples
 
 ![Dashboard 1](images/dashboard.jpg)
+![Dashboard 1](images/dashboard_trend_analysis.jpg)
+![Dashboard 1](images/dashboard_data_distribution.jpg)
 
 
+### FIltering by a Country (US)
 
 ![Dashboard 2](images/dashboard_US.jpg)
+![Dashboard 2](images/dashboard_trend_analysis_US.jpg)
+![Dashboard 2](images/dashboard_data_distribution_US.jpg)
 
-![Dashboard 3](images/dashboard3.png)
+
+
+![Dashboard 3](images/dashboard3.png) -->
+
+## Dashboard Examples
+
+### General Overview
+
+<div align="center">
+  <img src="images/dashboard.jpg" width="30%" height="100px"/>
+  <img src="images/dashboard_trend_analysis.jpg" width="30%" height="100px"/>
+  <img src="images/dashboard_data_distribution.jpg" width="30%" height="100px"/>
+</div>
+
+### Filtering by Country (US)
+
+<div align="center">
+  <img src="images/dashboard_US.jpg" width="30%" height="100px"/>
+  <img src="images/dashboard_trend_analysis_US.jpg" width="30%"height="100px" />
+  <img src="images/dashboard_data_distribution_US.jpg" width="30%" height="100px"/>
+</div>
+
+## AI Chat Assistant Examples
+
+<div align="center">
+  <img src="images/AI_assistant_landing.jpg" width="30%" height="100px"/>
+  <img src="images/chat_record_count_by_country_code.jpg" width="30%"height="100px" />
+  <img src="images/chat_top_client.jpg" width="30%" height="100px"/>
+</div>
