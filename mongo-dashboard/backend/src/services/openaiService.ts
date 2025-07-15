@@ -6,6 +6,8 @@ dotenv.config();
 
 // Initialize OpenAI
 const apiKey = process.env.OPENAI_API_KEY;
+console.log("API Key:", process.env.OPENAI_API_KEY);
+
 const isValidApiKey = apiKey && !apiKey.includes('your-openai-api-key');
 
 const openai = new OpenAI({
@@ -27,11 +29,11 @@ async function getMongoCollection() {
 
 // System prompt that describes the data structure and capabilities
 const systemPrompt = `
-You are an AI assistant for a MongoDB logs dashboard. You help users analyze log data by answering questions in natural language.
+You are an AI assistant for a MongoDB logs dashboard. You help users analyze log data by converting natural language questions into MongoDB queries.
 
-The logs collection has documents with this structure:
+The MongoDB collection is called "logs", and documents follow this structure:
 {
-  "_id": "68709db2402cf56cd3813d9e",
+  "_id": "ObjectId",
   "country_code": "US",
   "currency_code": "USD",
   "progress": {
@@ -53,56 +55,106 @@ The logs collection has documents with this structure:
 }
 
 You can:
-1. Answer questions about the data
-2. Perform aggregations and calculations
-3. Generate tables and charts
-4. Identify trends and patterns
+1. Perform filters, aggregations, and calculations
+2. Use $match, $group, $project, etc.
+3. Include ISO 8601 format dates
+4. Always wrap aggregation pipelines inside an object with "aggregate": "logs", and "pipeline": [ ... ]
 
-When responding:
-- For simple answers, use plain text
-- For data tables, use markdown tables
-- For charts, describe what the chart would show
-- If you can't answer a question, explain why and suggest alternatives
-- If a question is ambiguous, ask for clarification
-
-I'll provide you with the MongoDB query results based on your instructions.
+Only return a single valid JSON string that can be parsed using JSON.parse(). No extra text, no Markdown, no code blocks.
 `;
 
-// Function to generate MongoDB queries based on user questions
 async function generateMongoQuery(userQuestion: string): Promise<string> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: `Generate a MongoDB query to answer this question: "${userQuestion}". Return ONLY the query as a valid JSON string that can be parsed with JSON.parse(). The query should be compatible with MongoDB Node.js driver.` }
+        {
+          role: "user",
+          content: `Generate a MongoDB query to answer this question: "${userQuestion}". 
+Return ONLY the query as a single valid JSON object that can be parsed with JSON.parse(). 
+If the query requires aggregation, structure it like this:
+
+{
+  "aggregate": "logs",
+  "pipeline": [
+    { ... }, 
+    { ... }
+  ]
+}
+
+Do not include code blocks or explanations. Use ISO 8601 strings for dates.
+Ensure the JSON uses double quotes for all keys and values.`
+        }
       ],
       temperature: 0.2,
     });
 
-    const queryText = response.choices[0].message.content?.trim() || '';
-    
-    // Extract JSON if it's wrapped in backticks
-    const jsonMatch = queryText.match(/```json\s*([\s\S]*?)\s*```/) || 
-                      queryText.match(/```\s*([\s\S]*?)\s*```/) ||
-                      [null, queryText];
-    
-    return jsonMatch[1].trim();
+    let queryText = response.choices[0].message.content?.trim() || '';
+
+    // Remove accidental backticks or markdown wrapping if present
+    if (queryText.startsWith('```')) {
+      queryText = queryText.replace(/```json|```/g, '').trim();
+    }
+
+    // Ensure it's a valid JSON string (will throw if invalid)
+    JSON.parse(queryText);
+
+    return queryText;
   } catch (error) {
     console.error('Error generating MongoDB query:', error);
     throw new Error('Failed to generate database query');
   }
 }
 
+
+function fixMongoPipelineString(input: string): string {
+  const withArray = `[${input}]`;
+  const withDoubleQuotes = withArray.replace(/'/g, '"');
+  return withDoubleQuotes;
+}
+
+// const rawPipelineString = `{ 
+//   '$match': { 
+//     'timestamp': { 
+//       '$gte': '2025-06-01T00:00:00.000Z', 
+//       '$lt': '2025-07-01T00:00:00.000Z' 
+//     } 
+//   } 
+// }, 
+// { 
+//   '$group': { 
+//     '_id': '$transactionSourceName', 
+//     'averageJobsSentToIndex': { 
+//       '$avg': '$progress.TOTAL_JOBS_SENT_TO_INDEX' 
+//     } 
+//   } 
+// }`;
+
+// const fixed = fixMongoPipelineString(rawPipelineString);
+// const parsed = JSON.parse(fixed);
+
+
+
+
+
 // Function to execute MongoDB query and return results
 async function executeMongoQuery(queryString: string): Promise<any> {
   try {
     const collection = await getMongoCollection();
-    const query = JSON.parse(queryString);
+    console.log("queryString")
+    console.log(fixMongoPipelineString(queryString))
+    const query = JSON.parse(fixMongoPipelineString(queryString))[0];
     
+    console.log("query")
+    console.log(query)
+    console.log(query.aggregate)
+    console.log('aggregate' in query)
     // Determine the type of query and execute accordingly
-    if (query.aggregate) {
-      return await collection.aggregate(query.aggregate).toArray();
+    if ('aggregate' in query) {
+      console.log("hhhhhhhhhhhhhhh");
+      const pipeline = query?.pipeline;
+      return await collection.aggregate(pipeline).toArray();
     } else if (query.find) {
       const findQuery = query.find.query || {};
       const projection = query.find.projection || {};
@@ -150,11 +202,17 @@ export async function processQuestion(userQuestion: string): Promise<string> {
 
   try {
     // Step 1: Generate MongoDB query
+    // console.log(userQuestion);
     const queryString = await generateMongoQuery(userQuestion);
     
+    console.log(queryString);
+
     // Step 2: Execute the query
     const results = await executeMongoQuery(queryString);
     
+    // console.log("results");
+    // console.log(results);
+
     // Step 3: Format the results into a natural language response
     const response = await formatQueryResults(userQuestion, results);
     

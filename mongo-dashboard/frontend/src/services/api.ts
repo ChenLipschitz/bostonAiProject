@@ -77,6 +77,7 @@ export const fetchProgressStats = async (dateRange?: { startDate: Dayjs | null; 
 };
 
 export const sendChatMessage = async (message: string): Promise<ChatResponse> => {
+  console.log("heeeeee")
   const response = await api.post<ChatResponse>('/chat', { message });
   return response.data;
 };
